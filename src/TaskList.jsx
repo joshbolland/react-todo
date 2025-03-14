@@ -1,12 +1,18 @@
 import { useState } from "react";
 
-export default function TaskList() {
-  const [tasks, setTasks] = useState([]);
+export default function TaskList({ categories, tasks, setTasks, setAllTasks }) {
   const [taskDescription, setTaskDescription] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   function addTask() {
     if (taskDescription) {
-      setTasks([...tasks, { description: taskDescription, completed: false }]);
+      const newTask = {
+        description: taskDescription,
+        category: selectedCategory,
+        completed: false,
+      };
+      setTasks([...tasks, newTask]);
+      setAllTasks([...tasks, newTask]);
       setTaskDescription("");
     }
   }
@@ -21,7 +27,7 @@ export default function TaskList() {
   return (
     <div className="w-2/3 flex flex-col items-start ml-5 ">
       <h1 className="text-3xl font-bold text-purple-400 mb-2.5">To Do</h1>
-      <div className="mb-5 w-1/2">
+      <div className="mb-5 w-1/2 flex">
         <input
           className="bg-gray-200 rounded-sm p-1.5 w-full"
           type="text"
@@ -34,6 +40,18 @@ export default function TaskList() {
             }
           }}
         />
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          <option value="" disabled>
+            Select a category...
+          </option>
+          {categories.map((category, index) => (
+            <option key={index}>{category}</option>
+          ))}
+        </select>
       </div>
       <ul className="text-left">
         {tasks.map((task, index) => (
@@ -41,7 +59,7 @@ export default function TaskList() {
             {" "}
             <input
               type="checkbox"
-              value={task.completed}
+              checked={task.completed}
               onChange={() => completeTask(index)}
             />
             <span
@@ -49,6 +67,9 @@ export default function TaskList() {
               style={task.completed ? { textDecoration: "line-through" } : {}}
             >
               {task.description}
+            </span>
+            <span className="text-xs text-white bg-green-500 rounded-xl pl-3 pr-3 pt-1 pb-1 ml-1.5">
+              {task.category}
             </span>
           </li>
         ))}

@@ -1,13 +1,12 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
-} from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 
-export default function Categories() {
-  const [categories, setCategories] = useState(["All Tasks"]);
+export default function Categories({
+  categories,
+  setCategories,
+  setTasks,
+  allTasks,
+}) {
   const [categoryDescription, setCategoryDescription] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -21,17 +20,32 @@ export default function Categories() {
     closeModal();
   }
 
+  function filterTasks(category) {
+    const filteredTasks = allTasks.filter((task) => task.category === category);
+    setTasks(filteredTasks);
+  }
+
   return (
     <div className="w-1/3 min-h-full pt-8 border-r-2 border-r-gray-200 flex flex-col items-center">
       <ul className="w-full text-left pl-20">
+        <li
+          onClick={() => setTasks(allTasks)}
+          className="mt-2.5 mb-2.5 font-bold text-xl"
+        >
+          All Tasks
+        </li>
         {categories.map((category, index) => (
-          <li key={index} className="mt-2.5 mb-2.5">
-            <span className="text-xl ">{category}</span>
+          <li
+            onClick={() => filterTasks(category)}
+            key={index}
+            className="mt-2.5 mb-2.5"
+          >
+            <span className="text-xl cursor-pointer">{category}</span>
           </li>
         ))}
       </ul>
       <div className="w-full text-left pl-20 mt-2.5">
-        <button className="text-gray-400" onClick={openModal}>
+        <button className="text-gray-400 cursor-pointer" onClick={openModal}>
           + New Category
         </button>
       </div>
@@ -62,6 +76,11 @@ export default function Categories() {
                         className="bg-gray-200 rounded-sm p-1"
                         value={categoryDescription}
                         onChange={(e) => setCategoryDescription(e.target.value)}
+                        onKeyUp={(event) => {
+                          if (event.key === "Enter") {
+                            addCategory();
+                          }
+                        }}
                       />
                     </div>
                   </div>
