@@ -1,31 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { initializeFirebase } from "./FBConfig";
 
-export default function TaskList({ categories, tasks, setTasks, setAllTasks }) {
+export default function TaskList({
+  categories,
+  tasks,
+  setTasks,
+  allTasks,
+  setAllTasks,
+  user,
+  firebaseConfig,
+}) {
   const [taskDescription, setTaskDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const { db } = initializeFirebase(firebaseConfig);
 
-  function addTask() {
-    if (taskDescription) {
-      const newTask = {
-        description: taskDescription,
-        category: selectedCategory,
-        completed: false,
-      };
-      setTasks([...tasks, newTask]);
-      setAllTasks([...tasks, newTask]);
-      setTaskDescription("");
-    }
-  }
+  const userTasksRef = useMemo(
+    () => (user ? collection(db, "users", user.uid, "tasks") : null),
+    [user, db]
+  );
 
-  function completeTask(index) {
-    const updatedTasks = tasks.map((task, i) =>
-      i === index ? { ...task, completed: !task.completed } : task
+  useEffect(() => {
+    if (!user || !userTasksRef) return;
+
+    const fetchTasks = async () => {
+      const querySnapshot = await getDocs(userTasksRef);
+      const userTasks = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTasks(userTasks);
+    };
+
+    fetchTasks();
+  }, [user, userTasksRef, setTasks]);
+
+  const addTask = async () => {
+    if (!taskDescription || !user) return;
+
+    const newTask = {
+      description: taskDescription,
+      category: selectedCategory,
+      completed: false,
+    };
+
+    const docRef = await addDoc(userTasksRef, newTask);
+    setTasks([...tasks, { id: docRef.id, ...newTask }]);
+    setAllTasks([...allTasks, { id: docRef.id, ...newTask }]);
+    setTaskDescription("");
+  };
+
+  const completeTask = async (taskId, completed) => {
+    const taskRef = doc(db, "users", user.uid, "tasks", taskId);
+    await updateDoc(taskRef, { completed: !completed });
+
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId ? { ...task, completed: !completed } : task
+      )
     );
-    setTasks(updatedTasks);
-  }
+  };
 
   return (
-    <div className="w-2/3 flex flex-col items-start ml-5 ">
+    <div className="w-2/3 flex flex-col items-start ml-5">
       <h1 className="text-3xl font-bold text-purple-400 mb-2.5">To Do</h1>
       <div className="mb-5 w-1/2 flex">
         <input
@@ -43,7 +86,7 @@ export default function TaskList({ categories, tasks, setTasks, setAllTasks }) {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
         >
           <option value="" disabled>
             Select a category...
@@ -56,11 +99,10 @@ export default function TaskList({ categories, tasks, setTasks, setAllTasks }) {
       <ul className="text-left">
         {tasks.map((task, index) => (
           <li key={index}>
-            {" "}
             <input
               type="checkbox"
               checked={task.completed}
-              onChange={() => completeTask(index)}
+              onChange={() => completeTask(task.id, task.completed)}
             />
             <span
               className="pl-1.5"

@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 console.log("FIREBASE_API_KEY:", process.env.FIREBASE_API_KEY);
@@ -25,7 +24,6 @@ const firebaseConfig = {
 try {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const db = getFirestore(app);
   const analytics = getAnalytics(app);
 
   console.log("Firebase initialized successfully");

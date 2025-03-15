@@ -1,36 +1,89 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { initializeFirebase } from "./FBConfig";
 
 export default function Categories({
   categories,
   setCategories,
   setTasks,
-  allTasks,
+  user,
+  firebaseConfig,
 }) {
   const [categoryDescription, setCategoryDescription] = useState("");
   const [open, setOpen] = useState(false);
+  const { db } = initializeFirebase(firebaseConfig);
+
+  const userCategoriesRef = useMemo(
+    () => (user ? collection(db, "users", user.uid, "categories") : null),
+    [user, db]
+  );
+
+  const userTasksRef = useMemo(
+    () => (user ? collection(db, "users", user.uid, "tasks") : null),
+    [user, db]
+  );
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchCategories = async () => {
+      const querySnapshot = await getDocs(userCategoriesRef);
+      const fetchedCategories = querySnapshot.docs.map(
+        (doc) => doc.data().description
+      );
+      setCategories(fetchedCategories);
+    };
+
+    fetchCategories();
+  }, [user, userCategoriesRef, setCategories]);
 
   const openModal = () => setOpen(true);
 
   const closeModal = () => setOpen(false);
 
-  function addCategory() {
-    setCategories([...categories, categoryDescription]);
-    setCategoryDescription("");
-    closeModal();
-  }
+  const addCategory = async () => {
+    if (!categoryDescription || !user) return;
 
-  function filterTasks(category) {
-    const filteredTasks = allTasks.filter((task) => task.category === category);
-    setTasks(filteredTasks);
-  }
+    const newCategory = {
+      description: categoryDescription,
+    };
+
+    // Add new category to Firestore
+    await addDoc(userCategoriesRef, newCategory);
+
+    // Update local state with the new category
+    setCategories([...categories, categoryDescription]);
+    setCategoryDescription(""); // Clear input
+    closeModal();
+  };
+
+  const filterTasks = async (category) => {
+    if (!user) return;
+
+    let tasksQuery;
+
+    if (category) {
+      // Query Firestore for tasks that match the category
+      tasksQuery = query(userTasksRef, where("category", "==", category));
+    } else {
+      // Query Firestore for all tasks (no category filter)
+      tasksQuery = query(userTasksRef);
+    }
+
+    const querySnapshot = await getDocs(tasksQuery);
+    const fetchedTasks = querySnapshot.docs.map((doc) => doc.data());
+
+    // Update tasks state with the filtered tasks
+    setTasks(fetchedTasks);
+  };
 
   return (
     <div className="w-1/3 min-h-full pt-8 border-r-2 border-r-gray-200 flex flex-col items-center">
       <ul className="w-full text-left pl-20">
         <li
-          onClick={() => setTasks(allTasks)}
-          className="mt-2.5 mb-2.5 font-bold text-xl"
+          onClick={() => filterTasks(null)}
+          className="mt-2.5 mb-2.5 font-bold text-xl cursor-pointer"
         >
           All Tasks
         </li>

@@ -81,13 +81,17 @@ function App() {
                   setCategories={setCategories}
                   tasks={tasks}
                   setTasks={setTasks}
-                  allTasks={allTasks}
+                  user={user}
+                  firebaseConfig={firebaseConfig}
                 />
                 <TaskList
                   categories={categories}
                   tasks={tasks}
                   setTasks={setTasks}
+                  allTasks={allTasks}
                   setAllTasks={setAllTasks}
+                  user={user}
+                  firebaseConfig={firebaseConfig}
                 />
                 <button onClick={handleLogout} className="logout-button">
                   Logout
