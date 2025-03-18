@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 
 console.log("FIREBASE_API_KEY:", process.env.FIREBASE_API_KEY);
 console.log("FIREBASE_AUTH_DOMAIN:", process.env.FIREBASE_AUTH_DOMAIN);
@@ -24,7 +24,12 @@ const firebaseConfig = {
 try {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const analytics = getAnalytics(app);
+  let analytics;
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics();
+    }
+  });
 
   console.log("Firebase initialized successfully");
 } catch (error) {

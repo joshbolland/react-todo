@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { Modal } from "./Modal";
 import {
   collection,
   getDocs,
@@ -7,19 +8,29 @@ import {
   doc,
 } from "firebase/firestore";
 import { initializeFirebase } from "./FBConfig";
+import { PlusCircle } from "lucide-react";
 
 export default function TaskList({
-  categories,
   tasks,
   setTasks,
-  allTasks,
-  setAllTasks,
   user,
   firebaseConfig,
+  categories,
 }) {
   const [taskDescription, setTaskDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const { db } = initializeFirebase(firebaseConfig);
+  const [open, setOpen] = useState(false);
+  const [targetDate, setTargetDate] = useState("");
+
+  const openModal = () => setOpen(true);
+
+  const closeModal = () => {
+    setOpen(false);
+    setTaskDescription("");
+    setSelectedCategory("");
+    setTargetDate("");
+  };
 
   const userTasksRef = useMemo(
     () => (user ? collection(db, "users", user.uid, "tasks") : null),
@@ -41,19 +52,19 @@ export default function TaskList({
     fetchTasks();
   }, [user, userTasksRef, setTasks]);
 
-  const addTask = async () => {
+  const addTask = async (targetDate) => {
     if (!taskDescription || !user) return;
 
     const newTask = {
       description: taskDescription,
       category: selectedCategory,
       completed: false,
+      targetDate: targetDate || null,
     };
 
     const docRef = await addDoc(userTasksRef, newTask);
     setTasks([...tasks, { id: docRef.id, ...newTask }]);
-    setAllTasks([...allTasks, { id: docRef.id, ...newTask }]);
-    setTaskDescription("");
+    closeModal();
   };
 
   const completeTask = async (taskId, completed) => {
@@ -67,55 +78,88 @@ export default function TaskList({
     );
   };
 
+  const groupedTasks = tasks.reduce((acc, task) => {
+    const category = task.category;
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(task);
+    return acc;
+  }, {});
+
+  const sortTasks = (taskList) =>
+    taskList.sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed - b.completed;
+      return a.id.localeCompare(b.id);
+    });
+
   return (
     <div className="w-2/3 flex flex-col items-start ml-5">
-      <h1 className="text-3xl font-bold text-purple-400 mb-2.5">To Do</h1>
       <div className="mb-5 w-1/2 flex">
-        <input
-          className="bg-gray-200 rounded-sm p-1.5 w-full"
-          type="text"
-          placeholder="Add new task..."
-          value={taskDescription}
-          onChange={(e) => setTaskDescription(e.target.value)}
-          onKeyUp={(event) => {
-            if (event.key === "Enter") {
-              addTask();
-            }
-          }}
-        />
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
+        <button
+          className="inline-flex w-full justify-center rounded-md bg-[#7f54ff] px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-[#9b78ff] cursor-pointer sm:w-auto"
+          onClick={openModal}
         >
-          <option value="" disabled>
-            Select a category...
-          </option>
-          {categories.map((category, index) => (
-            <option key={index}>{category}</option>
-          ))}
-        </select>
+          <PlusCircle className="w-5 h-5 mr-2" />
+          New task
+        </button>
       </div>
-      <ul className="text-left">
-        {tasks.map((task, index) => (
-          <li key={index}>
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => completeTask(task.id, task.completed)}
-            />
-            <span
-              className="pl-1.5"
-              style={task.completed ? { textDecoration: "line-through" } : {}}
-            >
-              {task.description}
-            </span>
-            <span className="text-xs text-white bg-green-500 rounded-xl pl-3 pr-3 pt-1 pb-1 ml-1.5">
-              {task.category}
-            </span>
-          </li>
+      <div className="w-full">
+        {Object.entries(groupedTasks).map(([category, tasks]) => (
+          <div key={category} className="mb-6">
+            <h2 className="text-lg text-left font-semibold text-gray-800 pb-2 border-b border-gray-300">
+              {category}
+            </h2>
+            <ul>
+              {sortTasks(tasks).map((task, index) => (
+                <li
+                  key={index}
+                  className={`flex items-center py-3 ${
+                    index !== 0 ? "border-t border-gray-300" : ""
+                  }`}
+                >
+                  <div className="flex flex-col">
+                    <div className="flex">
+                      <input
+                        type="checkbox"
+                        checked={task.completed}
+                        onChange={() => completeTask(task.id, task.completed)}
+                        className="appearance-none self-center item w-5 h-5 border border-gray-500 rounded-full checked:bg-[#7f54ff] checked:border-[#9b78ff]"
+                      />
+                      <span
+                        className={`ml-3 ${
+                          task.completed ? "line-through text-gray-500" : ""
+                        }`}
+                      >
+                        {task.description}
+                      </span>
+                    </div>
+                    <div>
+                      {task.targetDate && (
+                        <p className="text-sm text-gray-500 text-left ml-8">
+                          {new Date(task.targetDate).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
-      </ul>
+      </div>
+
+      <Modal
+        open={open}
+        setOpen={setOpen}
+        taskDescription={taskDescription}
+        setTaskDescription={setTaskDescription}
+        addTask={addTask}
+        closeModal={closeModal}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        categories={categories}
+        targetDate={targetDate}
+        setTargetDate={setTargetDate}
+      />
     </div>
   );
 }

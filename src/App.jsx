@@ -5,8 +5,9 @@ import "./App.css";
 import TaskList from "./TaskList";
 import Categories from "./Categories";
 import Login from "./Login";
+import Navbar from "./Navbar";
 import { initializeFirebase } from "./FBConfig"; // Import auth to manage authentication
-import { onAuthStateChanged, signOut } from "firebase/auth"; // Import signOut to handle logging out
+import { onAuthStateChanged } from "firebase/auth"; // Import signOut to handle logging out
 
 function App() {
   const [user, setUser] = useState(null); // Manage user state
@@ -48,13 +49,8 @@ function App() {
     }
   }, [auth]);
 
-  const handleLogout = async () => {
-    await signOut(auth); // Sign out the user from Firebase
-    setUser(null); // Clear the user state
-  };
-
   return (
-    <div className="flex">
+    <div className="flex flex-col">
       <Routes>
         {/* Route for login */}
         <Route
@@ -75,27 +71,27 @@ function App() {
           path="/"
           element={
             user ? (
-              <div className="flex w-full min-h-screen">
-                <Categories
-                  categories={categories}
-                  setCategories={setCategories}
-                  tasks={tasks}
-                  setTasks={setTasks}
-                  user={user}
-                  firebaseConfig={firebaseConfig}
-                />
-                <TaskList
-                  categories={categories}
-                  tasks={tasks}
-                  setTasks={setTasks}
-                  allTasks={allTasks}
-                  setAllTasks={setAllTasks}
-                  user={user}
-                  firebaseConfig={firebaseConfig}
-                />
-                <button onClick={handleLogout} className="logout-button">
-                  Logout
-                </button>
+              <div>
+                <Navbar auth={auth} setUser={setUser} />
+                <div className="flex w-full min-h-screen">
+                  <Categories
+                    categories={categories}
+                    setCategories={setCategories}
+                    tasks={tasks}
+                    setTasks={setTasks}
+                    user={user}
+                    firebaseConfig={firebaseConfig}
+                  />
+                  <TaskList
+                    categories={categories}
+                    tasks={tasks}
+                    setTasks={setTasks}
+                    allTasks={allTasks}
+                    setAllTasks={setAllTasks}
+                    user={user}
+                    firebaseConfig={firebaseConfig}
+                  />
+                </div>
               </div>
             ) : (
               <Navigate to="/login" />
