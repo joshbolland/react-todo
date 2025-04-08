@@ -6,6 +6,10 @@ import TaskList from "./TaskList";
 import Categories from "./Categories";
 import Login from "./Login";
 import Navbar from "./Navbar";
+import SettingsNav from "./SettingsNav";
+import SignUp from "./SignUp";
+import Settings from "./Settings";
+
 import { initializeFirebase } from "./FBConfig"; // Import auth to manage authentication
 import { onAuthStateChanged } from "firebase/auth"; // Import signOut to handle logging out
 
@@ -67,6 +71,10 @@ function App() {
             )
           }
         />
+        <Route
+          path="/signup"
+          element={<SignUp setUser={setUser} auth={auth} />}
+        />
 
         {/* Route for dashboard */}
         <Route
@@ -105,6 +113,19 @@ function App() {
                     isDesktop={isDesktop}
                   />
                 </div>
+              </div>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            user ? (
+              <div className="bg-[#FCFAF8]">
+                <SettingsNav auth={auth} setUser={setUser} />
+                <Settings user={user} />
               </div>
             ) : (
               <Navigate to="/login" />
