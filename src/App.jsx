@@ -16,6 +16,8 @@ function App() {
   const [allTasks, setAllTasks] = useState([]);
   const [firebaseConfig, setFirebaseConfig] = useState(null); // Store firebase config
   const [auth, setAuth] = useState(null); // Store the auth object
+  const [sidebarIsOpen, setSidebarIsOpen] = useState(true); // Manage sidebar open state
+  const [isDesktop, setIsDesktop] = useState(true);
 
   // Fetch Firebase config from Netlify function
   useEffect(() => {
@@ -72,7 +74,13 @@ function App() {
           element={
             user ? (
               <div>
-                <Navbar auth={auth} setUser={setUser} />
+                <Navbar
+                  auth={auth}
+                  setUser={setUser}
+                  sidebarIsOpen={sidebarIsOpen}
+                  setSidebarIsOpen={setSidebarIsOpen}
+                  isDesktop={isDesktop}
+                />
                 <div className="flex w-full min-h-screen">
                   <Categories
                     categories={categories}
@@ -81,6 +89,10 @@ function App() {
                     setTasks={setTasks}
                     user={user}
                     firebaseConfig={firebaseConfig}
+                    sidebarIsOpen={sidebarIsOpen}
+                    setSidebarIsOpen={setSidebarIsOpen}
+                    isDesktop={isDesktop}
+                    setIsDesktop={setIsDesktop}
                   />
                   <TaskList
                     categories={categories}
@@ -90,6 +102,7 @@ function App() {
                     setAllTasks={setAllTasks}
                     user={user}
                     firebaseConfig={firebaseConfig}
+                    isDesktop={isDesktop}
                   />
                 </div>
               </div>

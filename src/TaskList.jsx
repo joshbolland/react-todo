@@ -16,6 +16,7 @@ export default function TaskList({
   user,
   firebaseConfig,
   categories,
+  isDesktop,
 }) {
   const [taskDescription, setTaskDescription] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -92,10 +93,12 @@ export default function TaskList({
     });
 
   return (
-    <div className="w-2/3 flex flex-col items-start ml-5">
+    <div
+      className={`flex flex-col items-start ml-5 ${isDesktop ? "w-2/3" : "w-full"}`}
+    >
       <div className="mb-5 w-1/2 flex">
         <button
-          className="inline-flex w-full justify-center rounded-md bg-[#7f54ff] px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-[#9b78ff] cursor-pointer sm:w-auto"
+          className="inline-flex w-auto justify-center rounded-md bg-[#7f54ff] px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-[#9b78ff] cursor-pointer sm:w-auto"
           onClick={openModal}
         >
           <PlusCircle className="w-5 h-5 mr-2" />
