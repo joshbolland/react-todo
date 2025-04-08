@@ -52,7 +52,7 @@ function App() {
   }, [auth]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col ">
       <Routes>
         {/* Route for login */}
         <Route
