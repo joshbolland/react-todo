@@ -9,7 +9,9 @@ import {
 } from "firebase/firestore";
 import { initializeFirebase } from "./FBConfig";
 
-const PlusCircleIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.PlusCircle })));
+const PlusCircleIcon = lazy(() =>
+  import("lucide-react").then((module) => ({ default: module.PlusCircle }))
+);
 
 export default function TaskList({
   tasks,
@@ -95,7 +97,7 @@ export default function TaskList({
 
   return (
     <div
-      className={`flex flex-col items-start ml-5 ${isDesktop ? "w-2/3" : "w-full"}`}
+      className={`flex flex-col items-start ml-5 ${isDesktop ? "w-3/4" : "w-full"}`}
     >
       <div className="mb-5 w-1/2 flex">
         <button
@@ -118,8 +120,9 @@ export default function TaskList({
               {sortTasks(tasks).map((task, index) => (
                 <li
                   key={index}
-                  className={`flex items-center py-3 ${index !== 0 ? "border-t border-gray-300" : ""
-                    }`}
+                  className={`flex items-center py-3 ${
+                    index !== 0 ? "border-t border-gray-300" : ""
+                  }`}
                 >
                   <div className="flex flex-col">
                     <div className="flex">
@@ -130,8 +133,9 @@ export default function TaskList({
                         className="appearance-none self-center item w-5 h-5 border border-gray-500 rounded-full checked:bg-[#7f54ff] checked:border-[#9b78ff]"
                       />
                       <span
-                        className={`ml-3 ${task.completed ? "line-through text-gray-500" : ""
-                          }`}
+                        className={`ml-3 ${
+                          task.completed ? "line-through text-gray-500" : ""
+                        }`}
                       >
                         {task.description}
                       </span>

@@ -4,9 +4,15 @@ import { signOut } from "firebase/auth";
 import logo from "./assets/tick.png";
 
 // Lazy load the icons
-const MenuIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.Menu })));
-const UserIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.User })));
-const ChevronDownIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.ChevronDown })));
+const MenuIcon = lazy(() =>
+  import("lucide-react").then((module) => ({ default: module.Menu }))
+);
+const UserIcon = lazy(() =>
+  import("lucide-react").then((module) => ({ default: module.User }))
+);
+const ChevronDownIcon = lazy(() =>
+  import("lucide-react").then((module) => ({ default: module.ChevronDown }))
+);
 
 export default function Navbar({
   auth,
@@ -36,8 +42,8 @@ export default function Navbar({
   };
 
   const handleSideBarToggle = () => {
-    setSidebarIsOpen(!sidebarIsOpen)
-  }
+    setSidebarIsOpen(!sidebarIsOpen);
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -48,7 +54,7 @@ export default function Navbar({
 
   return (
     <div className="flex w-full min-h-20 justify-between">
-      <div className={`${isDesktop ? "w-1/3 pt-8 bg-[#FCFAF8]" : "w-1/8"}`}>
+      <div className={`${isDesktop ? "w-1/4 pt-8 bg-[#FCFAF8]" : "w-1/8"}`}>
         <button
           className="sm:hidden p-2 m-2"
           onClick={handleSideBarToggle}
@@ -62,7 +68,7 @@ export default function Navbar({
 
       <div
         ref={dropdownRef}
-        className="w-2/3 bg-white flex justify-start items-center p-2 ml-5"
+        className="w-3/4 bg-white flex justify-start items-center p-2 ml-5"
       >
         <Link to="/">
           <img src={logo} className="w-12" alt="Logo" />

@@ -2,9 +2,13 @@ import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
 import { initializeFirebase } from "./FBConfig";
 
-const MenuIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.Menu })));
+const MenuIcon = lazy(() =>
+  import("lucide-react").then((module) => ({ default: module.Menu }))
+);
 
-const XIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.X })));
+const XIcon = lazy(() =>
+  import("lucide-react").then((module) => ({ default: module.X }))
+);
 
 export default function Categories({
   categories,
@@ -111,7 +115,7 @@ export default function Categories({
 
   return (
     <div
-      className={`min-h-full flex flex-col items-center bg-[#FCFAF8] ${isDesktop ? "w-1/3 pt-8" : "w-0"}`}
+      className={`min-h-full flex flex-col items-center bg-[#FCFAF8] ${isDesktop ? "w-1/4 pt-8" : "w-0"}`}
     >
       <aside
         className={`transform top-0 left-0 bg-[#FCFAF8] h-full fixed sm:static z-2 transition-transform duration-300 ease-in-out
@@ -153,9 +157,9 @@ export default function Categories({
           className={`text-left mt-2.5 ${isDesktop ? "w-full" : "w-4/5 pl-10"}`}
         >
           <input
-            className="bg-gray-100 rounded-sm p-1.5 w-full max-w-full ml-2 box-border"
+            className="bg-gray-100 rounded-sm p-1.5 w-full max-w-[200px] ml-2 box-border overflow-ellipsis"
             type="text"
-            placeholder="Add new category"
+            placeholder="Add new category..."
             value={categoryDescription}
             onChange={(e) => setCategoryDescription(e.target.value)}
             onKeyUp={(event) => {
