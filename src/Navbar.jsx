@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import logo from "./assets/tick.png";
-import { Menu, User, ChevronDown } from "lucide-react";
+
+// Lazy load the icons
+const MenuIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.Menu })));
+const UserIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.User })));
+const ChevronDownIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.ChevronDown })));
 
 export default function Navbar({
   auth,
@@ -31,6 +35,10 @@ export default function Navbar({
     }
   };
 
+  const handleSideBarToggle = () => {
+    setSidebarIsOpen(!sidebarIsOpen)
+  }
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -43,10 +51,12 @@ export default function Navbar({
       <div className={`${isDesktop ? "w-1/3 pt-8 bg-[#FCFAF8]" : "w-1/8"}`}>
         <button
           className="sm:hidden p-2 m-2"
-          onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
+          onClick={handleSideBarToggle}
           aria-label="Toggle Sidebar"
         >
-          {!sidebarIsOpen && <Menu className="w-6 h-6" />}
+          <Suspense fallback={<div>Loading...</div>}>
+            {!sidebarIsOpen && <MenuIcon className="w-6 h-6" />}
+          </Suspense>
         </button>
       </div>
 
@@ -63,10 +73,14 @@ export default function Navbar({
             onClick={toggleDropdown}
             className="flex items-center gap-2 text-white bg-[#7f54ff] hover:bg-[#9b78ff] cursor-pointer focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-4 py-2.5"
           >
-            <User className="w-4 h-4" />
-            <ChevronDown
-              className={`w-4 h-4 transform ${dropdownOpen ? "rotate-180" : ""}`}
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <UserIcon className="w-4 h-4" />
+            </Suspense>
+            <Suspense fallback={<div>Loading...</div>}>
+              <ChevronDownIcon
+                className={`w-4 h-4 transform ${dropdownOpen ? "rotate-180" : ""}`}
+              />
+            </Suspense>
           </button>
 
           {dropdownOpen && (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { Modal } from "./Modal";
 import {
   collection,
@@ -8,7 +8,8 @@ import {
   doc,
 } from "firebase/firestore";
 import { initializeFirebase } from "./FBConfig";
-import { PlusCircle } from "lucide-react";
+
+const PlusCircleIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.PlusCircle })));
 
 export default function TaskList({
   tasks,
@@ -101,7 +102,9 @@ export default function TaskList({
           className="inline-flex w-auto justify-center rounded-md bg-[#7f54ff] px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-[#9b78ff] cursor-pointer sm:w-auto"
           onClick={openModal}
         >
-          <PlusCircle className="w-5 h-5 mr-2" />
+          <Suspense fallback={<div>Loading...</div>}>
+            <PlusCircleIcon className="w-5 h-5 mr-2" />
+          </Suspense>
           New task
         </button>
       </div>
@@ -115,9 +118,8 @@ export default function TaskList({
               {sortTasks(tasks).map((task, index) => (
                 <li
                   key={index}
-                  className={`flex items-center py-3 ${
-                    index !== 0 ? "border-t border-gray-300" : ""
-                  }`}
+                  className={`flex items-center py-3 ${index !== 0 ? "border-t border-gray-300" : ""
+                    }`}
                 >
                   <div className="flex flex-col">
                     <div className="flex">
@@ -128,9 +130,8 @@ export default function TaskList({
                         className="appearance-none self-center item w-5 h-5 border border-gray-500 rounded-full checked:bg-[#7f54ff] checked:border-[#9b78ff]"
                       />
                       <span
-                        className={`ml-3 ${
-                          task.completed ? "line-through text-gray-500" : ""
-                        }`}
+                        className={`ml-3 ${task.completed ? "line-through text-gray-500" : ""
+                          }`}
                       >
                         {task.description}
                       </span>

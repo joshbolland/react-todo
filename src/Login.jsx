@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import tick from "./assets/tick.png";
-import task from "./assets/task.jpg";
+import task from "./assets/task.webp";
 
 const Login = ({ setUser, auth }) => {
   const [loading, setLoading] = useState(false);
@@ -86,9 +86,8 @@ const Login = ({ setUser, auth }) => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white bg-[#3292FF] hover:bg-[#3292FF]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`w-full text-white bg-[#3292FF] hover:bg-[#3292FF]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
           >
             {loading ? (
               <div className="animate-spin w-5 h-5 border-4 border-white border-t-transparent rounded-full"></div>

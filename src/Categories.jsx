@@ -1,7 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
 import { initializeFirebase } from "./FBConfig";
-import { Menu, X } from "lucide-react";
+
+const MenuIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.Menu })));
+
+const XIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.X })));
 
 export default function Categories({
   categories,
@@ -56,7 +59,7 @@ export default function Categories({
   );
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !userCategoriesRef) return;
 
     const fetchCategories = async () => {
       const querySnapshot = await getDocs(userCategoriesRef);
@@ -119,11 +122,13 @@ export default function Categories({
           onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
           aria-label="Toggle Sidebar"
         >
-          {sidebarIsOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
+          <Suspense fallback={<div>Loading...</div>}>
+            {sidebarIsOpen ? (
+              <XIcon className="w-6 h-6" />
+            ) : (
+              <MenuIcon className="w-6 h-6" />
+            )}
+          </Suspense>
         </button>
         <ul
           className={`w-full text-left ${isDesktop ? "w-full" : "w-4/5 pl-10"}`}

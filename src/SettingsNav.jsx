@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import logo from "./assets/tick.png";
-import { User, ChevronDown } from "lucide-react";
+
+const UserIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.User })));
+const ChevronDownIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.ChevronDown })));
+
 
 export default function Navbar({ auth, setUser }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -47,10 +50,14 @@ export default function Navbar({ auth, setUser }) {
             onClick={toggleDropdown}
             className="flex items-center gap-2 text-white bg-[#7f54ff] hover:bg-[#9b78ff] cursor-pointer focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-4 py-2.5"
           >
-            <User className="w-4 h-4" />
-            <ChevronDown
-              className={`w-4 h-4 transform ${dropdownOpen ? "rotate-180" : ""}`}
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <UserIcon className="w-4 h-4" />
+            </Suspense>
+            <Suspense fallback={<div>Loading...</div>}>
+              <ChevronDownIcon
+                className={`w-4 h-4 transform ${dropdownOpen ? "rotate-180" : ""}`}
+              />
+            </Suspense>
           </button>
 
           {dropdownOpen && (

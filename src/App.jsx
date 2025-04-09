@@ -1,27 +1,27 @@
-// App.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom"; // Use Navigate for redirection
 import "./App.css";
-import TaskList from "./TaskList";
-import Categories from "./Categories";
 import Login from "./Login";
-import Navbar from "./Navbar";
-import SettingsNav from "./SettingsNav";
 import SignUp from "./SignUp";
-import Settings from "./Settings";
+import { initializeFirebase } from "./FBConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
-import { initializeFirebase } from "./FBConfig"; // Import auth to manage authentication
-import { onAuthStateChanged } from "firebase/auth"; // Import signOut to handle logging out
+// Lazy load the components
+const Navbar = lazy(() => import("./Navbar"));
+const Categories = lazy(() => import("./Categories"));
+const TaskList = lazy(() => import("./TaskList"));
+const SettingsNav = lazy(() => import("./SettingsNav"));
+const Settings = lazy(() => import("./Settings"));
 
 function App() {
   const [user, setUser] = useState(null); // Manage user state
-  const [categories, setCategories] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [allTasks, setAllTasks] = useState([]);
   const [firebaseConfig, setFirebaseConfig] = useState(null); // Store firebase config
   const [auth, setAuth] = useState(null); // Store the auth object
   const [sidebarIsOpen, setSidebarIsOpen] = useState(true); // Manage sidebar open state
-  const [isDesktop, setIsDesktop] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(true); // Desktop check workaround for styling purposes
+  const [categories, setCategories] = useState([]);
+  const [tasks, setTasks] = useState([]);
+
 
   // Fetch Firebase config from Netlify function
   useEffect(() => {
@@ -71,10 +71,7 @@ function App() {
             )
           }
         />
-        <Route
-          path="/signup"
-          element={<SignUp setUser={setUser} auth={auth} />}
-        />
+        <Route path="/signup" element={<SignUp setUser={setUser} auth={auth} />} />
 
         {/* Route for dashboard */}
         <Route
@@ -82,37 +79,37 @@ function App() {
           element={
             user ? (
               <div>
-                <Navbar
-                  auth={auth}
-                  setUser={setUser}
-                  sidebarIsOpen={sidebarIsOpen}
-                  setSidebarIsOpen={setSidebarIsOpen}
-                  isDesktop={isDesktop}
-                />
-                <div className="flex w-full min-h-screen">
-                  <Categories
-                    categories={categories}
-                    setCategories={setCategories}
-                    tasks={tasks}
-                    setTasks={setTasks}
-                    user={user}
-                    firebaseConfig={firebaseConfig}
+                <Suspense fallback={<div>Loading...</div>}>
+                  <Navbar
+                    auth={auth}
+                    setUser={setUser}
                     sidebarIsOpen={sidebarIsOpen}
                     setSidebarIsOpen={setSidebarIsOpen}
                     isDesktop={isDesktop}
-                    setIsDesktop={setIsDesktop}
                   />
-                  <TaskList
-                    categories={categories}
-                    tasks={tasks}
-                    setTasks={setTasks}
-                    allTasks={allTasks}
-                    setAllTasks={setAllTasks}
-                    user={user}
-                    firebaseConfig={firebaseConfig}
-                    isDesktop={isDesktop}
-                  />
-                </div>
+                  <div className="flex w-full min-h-screen">
+                    <Categories
+                      categories={categories}
+                      setCategories={setCategories}
+                      tasks={tasks}
+                      setTasks={setTasks}
+                      user={user}
+                      firebaseConfig={firebaseConfig}
+                      sidebarIsOpen={sidebarIsOpen}
+                      setSidebarIsOpen={setSidebarIsOpen}
+                      isDesktop={isDesktop}
+                      setIsDesktop={setIsDesktop}
+                    />
+                    <TaskList
+                      categories={categories}
+                      tasks={tasks}
+                      setTasks={setTasks}
+                      user={user}
+                      firebaseConfig={firebaseConfig}
+                      isDesktop={isDesktop}
+                    />
+                  </div>
+                </Suspense>
               </div>
             ) : (
               <Navigate to="/login" />
@@ -124,8 +121,10 @@ function App() {
           element={
             user ? (
               <div className="bg-[#FCFAF8]">
-                <SettingsNav auth={auth} setUser={setUser} />
-                <Settings user={user} />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <SettingsNav auth={auth} setUser={setUser} />
+                  <Settings user={user} />
+                </Suspense>
               </div>
             ) : (
               <Navigate to="/login" />
