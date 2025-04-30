@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
+import { signOut, Auth, User } from "firebase/auth";
 import logo from "./assets/tick.png";
+
+interface NavbarProps {
+  auth: Auth | null;
+  setUser: (user: User | null) => void;
+  sidebarIsOpen: boolean;
+  setSidebarIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isDesktop: boolean;
+}
 
 // Lazy load the icons
 const MenuIcon = lazy(() =>
@@ -20,12 +28,13 @@ export default function Navbar({
   sidebarIsOpen,
   setSidebarIsOpen,
   isDesktop,
-}) {
+}: NavbarProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    if (!auth) return;
     await signOut(auth);
     setUser(null);
     navigate("/login"); // Redirect to login after logout
@@ -35,8 +44,13 @@ export default function Navbar({
     setDropdownOpen(!dropdownOpen);
   };
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target;
+    if (
+      dropdownRef.current &&
+      target instanceof Node &&
+      !dropdownRef.current.contains(target)
+    ) {
       setDropdownOpen(false);
     }
   };

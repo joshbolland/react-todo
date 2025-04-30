@@ -3,20 +3,33 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithEmailAndPassword,
+  User,
+  Auth
 } from "firebase/auth";
 import tick from "./assets/tick.png";
 import task from "./assets/task.webp";
 
-const Login = ({ setUser, auth }) => {
+interface LoginProps {
+  setUser: (user: User | null) => void;
+  auth: Auth | null;
+}
+
+export default function Login({ setUser, auth }: LoginProps) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleEmailLogin = async (e) => {
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (!auth) {
+      setError("Authentication service unavailable.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
@@ -25,7 +38,12 @@ const Login = ({ setUser, auth }) => {
       setUser(user); // Set the user state in App component (passed via props)
     } catch (error) {
       setError("Error logging in. Please check your credentials.");
-      console.error("Error logging in:", error.message);
+      if (error instanceof Error) {
+        console.error("Error logging in:", error.message);
+      }
+      else {
+        console.error("Unknown error logging in:", error);
+      }
     } finally {
       setLoading(false);
     }
@@ -36,6 +54,12 @@ const Login = ({ setUser, auth }) => {
     setLoading(true);
     setError(null);
 
+    if (!auth) {
+      setError("Authentication service unavailable.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
@@ -43,7 +67,12 @@ const Login = ({ setUser, auth }) => {
       setUser(user); // Set the user state in App component (passed via props)
     } catch (error) {
       setError("Error signing in with Google. Please try again.");
-      console.error("Error signing in with Google:", error.message);
+      if (error instanceof Error) {
+        console.error("Error signing in with Google:", error.message);
+      }
+      else {
+        console.error("Unknown error logging in:", error);
+      }
     } finally {
       setLoading(false);
     }
@@ -150,5 +179,3 @@ const Login = ({ setUser, auth }) => {
     </div>
   );
 };
-
-export default Login;

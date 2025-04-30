@@ -1,4 +1,19 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { Category } from "./types";
+
+interface ModalProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  taskDescription: string;
+  setTaskDescription: React.Dispatch<React.SetStateAction<string>>;
+  addTask: (targetDate: string | null) => void;
+  closeModal: () => void;
+  selectedCategory: string;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+  categories: Category[];
+  targetDate: string;
+  setTargetDate: React.Dispatch<React.SetStateAction<string>>;
+}
 
 export function Modal({
   open,
@@ -12,7 +27,7 @@ export function Modal({
   categories,
   targetDate,
   setTargetDate,
-}) {
+}: ModalProps) {
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-10">
       <div
@@ -40,6 +55,8 @@ export function Modal({
                     placeholder="Enter description"
                     value={taskDescription}
                     onChange={(e) => setTaskDescription(e.target.value)}
+                    minLength={1}
+                    maxLength={100}
                   />
                   <label>Category</label>
                   <select
@@ -51,7 +68,7 @@ export function Modal({
                       Select a category
                     </option>
                     {categories.map((category, index) => (
-                      <option key={index}>{category}</option>
+                      <option key={index}>{category.description}</option>
                     ))}
                   </select>
                   <label className="block text-sm font-medium text-gray-700">
@@ -70,7 +87,22 @@ export function Modal({
               <button
                 type="button"
                 onClick={() => addTask(targetDate)}
-                className="inline-flex justify-center rounded-md cursor-pointer bg-[#7f54ff] px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-[#9b78ff] ml-3 w-auto"
+                disabled={
+                  !taskDescription ||
+                  taskDescription.trim().length < 1 ||
+                  taskDescription.trim().length > 100 ||
+                  !selectedCategory ||
+                  !targetDate
+                }
+                className={`inline-flex justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs ml-3 w-auto
+                  ${!taskDescription ||
+                    taskDescription.trim().length < 1 ||
+                    taskDescription.trim().length > 100 ||
+                    !selectedCategory ||
+                    !targetDate
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "cursor-pointer bg-[#7f54ff] text-white hover:bg-[#9b78ff]"
+                  }`}
               >
                 Save
               </button>

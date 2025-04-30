@@ -4,23 +4,24 @@ import "./App.css";
 import Login from "./Login";
 import SignUp from "./SignUp";
 import { initializeFirebase } from "./FBConfig";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User, Auth } from "firebase/auth";
+import { FirebaseConfig, Category, Task } from "./types";
 
 // Lazy load the components
-const Navbar = lazy(() => import("./Navbar"));
+const Navbar = lazy(() => import("./Navbar.jsx"));
 const Categories = lazy(() => import("./Categories"));
 const TaskList = lazy(() => import("./TaskList"));
 const SettingsNav = lazy(() => import("./SettingsNav"));
-const Settings = lazy(() => import("./Settings"));
+const Settings = lazy(() => import("./Settings.js"));
 
 function App() {
-  const [user, setUser] = useState(null); // Manage user state
-  const [firebaseConfig, setFirebaseConfig] = useState(null); // Store firebase config
-  const [auth, setAuth] = useState(null); // Store the auth object
-  const [sidebarIsOpen, setSidebarIsOpen] = useState(true); // Manage sidebar open state
-  const [isDesktop, setIsDesktop] = useState(true); // Desktop check workaround for styling purposes
-  const [categories, setCategories] = useState([]);
-  const [tasks, setTasks] = useState([]);
+  const [user, setUser] = useState<User | null>(null); // Manage user state
+  const [firebaseConfig, setFirebaseConfig] = useState<FirebaseConfig | null>(null); // Store firebase config
+  const [auth, setAuth] = useState<Auth | null>(null); // Store the auth object
+  const [sidebarIsOpen, setSidebarIsOpen] = useState<boolean>(true); // Manage sidebar open state
+  const [isDesktop, setIsDesktop] = useState<boolean>(true); // Desktop check workaround for styling purposes
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
 
   // Fetch Firebase config from Netlify function
@@ -91,7 +92,6 @@ function App() {
                     <Categories
                       categories={categories}
                       setCategories={setCategories}
-                      tasks={tasks}
                       setTasks={setTasks}
                       user={user}
                       firebaseConfig={firebaseConfig}

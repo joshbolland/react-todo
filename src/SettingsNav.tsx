@@ -1,18 +1,24 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
+import { signOut, Auth } from "firebase/auth";
 import logo from "./assets/tick.png";
 
 const UserIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.User })));
 const ChevronDownIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.ChevronDown })));
 
 
-export default function Navbar({ auth, setUser }) {
+interface SettingsNavProps {
+  auth: Auth | null;
+  setUser: (user: null) => void;
+}
+
+export default function Navbar({ auth, setUser }: SettingsNavProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    if (!auth) return;
     await signOut(auth);
     setUser(null);
     navigate("/login"); // Redirect to login after logout
@@ -22,8 +28,13 @@ export default function Navbar({ auth, setUser }) {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target;
+    if (
+      dropdownRef.current &&
+      target instanceof Node &&
+      !dropdownRef.current.contains(target)
+    ) {
       setDropdownOpen(false);
     }
   };

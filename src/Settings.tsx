@@ -1,13 +1,17 @@
 import React, { useState } from "react";
-import { EmailAuthProvider, linkWithCredential } from "firebase/auth";
+import { EmailAuthProvider, linkWithCredential, User } from "firebase/auth";
 
-const Settings = ({ user }) => {
+interface SettingsProps {
+  user: User | null;
+}
+
+export default function Settings({ user }: SettingsProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSetPassword = async (e) => {
+  const handleSetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
     setError(null);
@@ -17,13 +21,22 @@ const Settings = ({ user }) => {
       return;
     }
 
+    if (!user || !user.email) {
+      setError("User is not available. Please log in again.");
+      return;
+    }
+
     try {
       const credential = EmailAuthProvider.credential(user.email, password);
       await linkWithCredential(user, credential);
       setMessage("Password successfully set for your account.");
     } catch (err) {
       console.error(err);
-      setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
     }
   };
 
@@ -75,5 +88,3 @@ const Settings = ({ user }) => {
     </div>
   );
 };
-
-export default Settings;
