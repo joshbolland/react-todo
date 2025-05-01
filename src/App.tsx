@@ -1,11 +1,11 @@
-import React, { useEffect, useState, lazy, Suspense } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom"; // Use Navigate for redirection
 import "./App.css";
 import Login from "./Login";
 import SignUp from "./SignUp";
-import { initializeFirebase } from "./FBConfig";
-import { onAuthStateChanged, User, Auth } from "firebase/auth";
-import { FirebaseConfig, Category, Task } from "./types";
+import { Category, Task } from "./types";
+import useFirebaseConfig from "./hooks/useFirebaseConfig";
+import useFirebaseAuth from "./hooks/useFirebaseAuth";
 
 // Lazy load the components
 const Navbar = lazy(() => import("./Navbar.jsx"));
@@ -15,46 +15,13 @@ const SettingsNav = lazy(() => import("./SettingsNav"));
 const Settings = lazy(() => import("./Settings.js"));
 
 function App() {
-  const [user, setUser] = useState<User | null>(null); // Manage user state
-  const [firebaseConfig, setFirebaseConfig] = useState<FirebaseConfig | null>(null); // Store firebase config
-  const [auth, setAuth] = useState<Auth | null>(null); // Store the auth object
+  const firebaseConfig = useFirebaseConfig();
+  const { auth, user, setUser } = useFirebaseAuth(firebaseConfig);
+
   const [sidebarIsOpen, setSidebarIsOpen] = useState<boolean>(true); // Manage sidebar open state
   const [isDesktop, setIsDesktop] = useState<boolean>(true); // Desktop check workaround for styling purposes
   const [categories, setCategories] = useState<Category[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
-
-
-  // Fetch Firebase config from Netlify function
-  useEffect(() => {
-    const fetchFirebaseConfig = async () => {
-      try {
-        const res = await fetch("/.netlify/functions/firebaseConfig");
-        const data = await res.json();
-        setFirebaseConfig(data.firebaseConfig);
-      } catch (error) {
-        console.error("Error fetching Firebase config:", error);
-      }
-    };
-
-    fetchFirebaseConfig();
-  }, []);
-
-  // Initialize Firebase once the config is fetched
-  useEffect(() => {
-    if (firebaseConfig) {
-      const { auth } = initializeFirebase(firebaseConfig);
-      setAuth(auth); // Set the auth object in the state
-    }
-  }, [firebaseConfig]);
-
-  useEffect(() => {
-    if (auth) {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        setUser(user);
-      });
-      return () => unsubscribe();
-    }
-  }, [auth]);
 
   return (
     <div className="flex flex-col ">
@@ -88,7 +55,7 @@ function App() {
                     setSidebarIsOpen={setSidebarIsOpen}
                     isDesktop={isDesktop}
                   />
-                  <div className="flex w-full min-h-screen">
+                  <div className="flex w-full min-h-[calc(100vh-80px)]">
                     <Categories
                       categories={categories}
                       setCategories={setCategories}

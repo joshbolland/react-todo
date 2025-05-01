@@ -1,15 +1,17 @@
 # Task Management App
 
-A task management web application built using React, Firebase, and TailwindCSS. This app allows users to create, manage, and complete tasks, while storing data in Firebase Firestore.
+A task management web application built using React, TypeScript, Firebase, and TailwindCSS. This app allows users to create, manage, and complete tasks, while storing data in Firebase Firestore.
 
 ## Features
 
 - **Task List**: View tasks with descriptions, categories, and completion statuses.
 - **Create New Task**: Add new tasks with descriptions, categories, and target dates.
 - **Task Completion**: Mark tasks as complete or incomplete.
+- **Task/Category Deletion**: Delete single tasks or entire categories.
 - **Categorization**: Organize tasks into categories.
 - **Firebase Authentication**: Secure user authentication for personalized task management.
 - **Cloud Storage**: Data is stored securely in Firebase Firestore.
+- **Responsive UI**: Optimized for both desktop and mobile with a collapsible sidebar and dynamic layout adjustments.
 
 ## Technologies Used
 
@@ -19,6 +21,7 @@ A task management web application built using React, Firebase, and TailwindCSS. 
   - **TailwindCSS**: Utility-first CSS framework for rapid UI development.
   - **Firebase**: Real-time database, authentication, and cloud storage.
   - **Vitest**: Testing framework.
+  - **TypeScript**: Adds static typing to JavaScript for safer, more maintainable code.
 
 - **Backend**:
   - **Firebase Firestore**: Cloud NoSQL database for storing task data.
