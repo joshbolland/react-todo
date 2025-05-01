@@ -9,8 +9,8 @@ import {
   doc,
   deleteDoc,
 } from "firebase/firestore";
-import { initializeFirebase } from "./FBConfig";
-import { Task, FirebaseConfig, Category } from "./types";
+import { initializeFirebase } from "../config/FBConfig";
+import { Task, FirebaseConfig, Category } from "../types/types";
 import { User } from "firebase/auth";
 
 const PlusCircleIcon = lazy(() =>

@@ -1,18 +1,18 @@
 import React, { useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom"; // Use Navigate for redirection
 import "./App.css";
-import Login from "./Login";
-import SignUp from "./SignUp";
-import { Category, Task } from "./types";
+import Login from "./features/Login";
+import SignUp from "./features/SignUp";
+import { Category, Task } from "./types/types";
 import useFirebaseConfig from "./hooks/useFirebaseConfig";
 import useFirebaseAuth from "./hooks/useFirebaseAuth";
 
 // Lazy load the components
-const Navbar = lazy(() => import("./Navbar.jsx"));
-const Categories = lazy(() => import("./Categories"));
-const TaskList = lazy(() => import("./TaskList"));
-const SettingsNav = lazy(() => import("./SettingsNav"));
-const Settings = lazy(() => import("./Settings.js"));
+const Navbar = lazy(() => import("./components/Navbar.js"));
+const Categories = lazy(() => import("./components/Categories"));
+const TaskList = lazy(() => import("./components/TaskList"));
+const SettingsNav = lazy(() => import("./components/SettingsNav"));
+const Settings = lazy(() => import("./components/Settings.js"));
 
 function App() {
   const firebaseConfig = useFirebaseConfig();

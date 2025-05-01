@@ -1,8 +1,8 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { collection, getDocs, addDoc, query, where, doc, deleteDoc } from "firebase/firestore";
-import { initializeFirebase } from "./FBConfig";
-import { Task, FirebaseConfig, Category } from "./types";
+import { initializeFirebase } from "../config/FBConfig";
+import { Task, FirebaseConfig, Category } from "../types/types";
 import { User } from "firebase/auth";
 
 const MenuIcon = lazy(() =>

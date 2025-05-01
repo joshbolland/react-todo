@@ -1,15 +1,30 @@
 import { render, screen, act } from "@testing-library/react";
 import { vi, expect, test } from "vitest";
+import '@testing-library/jest-dom';
 
-vi.mock("../FBConfig");
+import { mockUser } from "./test-utils/mockUser";
+
+const mockFirebaseConfig = {
+  apiKey: "test-api-key",
+  authDomain: "test-auth-domain",
+  projectId: "test-project-id",
+};
+
+vi.mock("../config/FBConfig", () => ({
+  initializeFirebase: vi.fn(() => ({
+    app: {},
+    auth: {},
+    db: {}, // Mock Firestore db object
+  })),
+}));
 vi.mock("firebase/firestore", () => ({
   ...vi.importActual("firebase/firestore"),
   doc: vi.fn().mockReturnValue({}),
-  updateDoc: vi.fn().mockResolvedValue(),
+  updateDoc: vi.fn().mockResolvedValue(undefined),
   collection: vi.fn().mockReturnValue({}),
 }));
 
-import TaskList from "../TaskList";
+import TaskList from "../components/TaskList";
 
 test("renders without crashing", () => {
   render(
@@ -17,8 +32,9 @@ test("renders without crashing", () => {
       tasks={[]}
       setTasks={vi.fn()} // Use vi.fn() from Vitest
       user={null}
-      firebaseConfig={{}}
+      firebaseConfig={mockFirebaseConfig}
       categories={[]}
+      isDesktop={true}
     />
   );
   expect(screen.getByText(/New task/i)).toBeInTheDocument();
@@ -30,8 +46,9 @@ test("new task modal opens when new task button is clicked", async () => {
       tasks={[]}
       setTasks={vi.fn()}
       user={null}
-      firebaseConfig={{}}
+      firebaseConfig={mockFirebaseConfig}
       categories={[]}
+      isDesktop={true}
     />
   );
   const newTaskButton = screen.getByText(/New task/i);
@@ -67,8 +84,12 @@ test("renders tasks correctly", () => {
       tasks={tasks}
       setTasks={vi.fn()}
       user={null}
-      firebaseConfig={{}}
-      categories={["Work", "Personal"]}
+      firebaseConfig={mockFirebaseConfig}
+      categories={[
+        { id: "1", description: "Work" },
+        { id: "2", description: "Personal" },
+      ]}
+      isDesktop={true}
     />
   );
   // Check if task descriptions are rendered
@@ -81,8 +102,6 @@ test("renders tasks correctly", () => {
 });
 
 test("task can be marked as complete and incomplete", async () => {
-  const mockUser = { uid: "123456" };
-
   const tasks = [
     {
       id: "1",
@@ -101,8 +120,12 @@ test("task can be marked as complete and incomplete", async () => {
       tasks={tasks}
       setTasks={setTasks}
       user={mockUser}
-      firebaseConfig={{}}
-      categories={["Work"]}
+      firebaseConfig={mockFirebaseConfig}
+      categories={[
+        { id: "1", description: "Work" },
+        { id: "2", description: "Personal" },
+      ]}
+      isDesktop={true}
     />
   );
 
@@ -127,8 +150,12 @@ test("task can be marked as complete and incomplete", async () => {
       tasks={tasks}
       setTasks={setTasks}
       user={mockUser}
-      firebaseConfig={{}}
-      categories={["Work"]}
+      firebaseConfig={mockFirebaseConfig}
+      categories={[
+        { id: "1", description: "Work" },
+        { id: "2", description: "Personal" },
+      ]}
+      isDesktop={true}
     />
   );
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FirebaseConfig } from "../types";
+import { FirebaseConfig } from "../types/types";
 
 export default function useFirebaseConfig() {
     const [firebaseConfig, setFirebaseConfig] = useState<FirebaseConfig | null>(null);
