@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut, Auth } from "firebase/auth";
-import logo from "./assets/tick.png";
+import logo from "../assets/tick.png";
 
 const UserIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.User })));
 const ChevronDownIcon = lazy(() => import("lucide-react").then((module) => ({ default: module.ChevronDown })));
