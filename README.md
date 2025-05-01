@@ -41,8 +41,8 @@ Before running the project, ensure that you have the following installed:
 1. **Clone the repository**:
 
    ```bash
-   git clone <repository_url>
-   cd <project_directory>
+   git clone https://github.com/joshbolland/react-todo.git
+   cd react-todo
    ```
 
 2. **Install Dependencies**:
