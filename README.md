@@ -34,6 +34,7 @@ Before running the project, ensure that you have the following installed:
 
 - [Node.js](https://nodejs.org/) (v14 or higher)
 - [Firebase project](https://console.firebase.google.com/)
+- [Netlify CLI](https://docs.netlify.com/cli/get-started/) (for local development with serverless functions)
 
 ### Installation
 
@@ -66,11 +67,16 @@ Before running the project, ensure that you have the following installed:
 
 4. **Start the Development Server**:
 
+   If you haven't already, install the Netlify CLI:
    ```bash
-   npm start
+   npm install -g netlify-cli
    ```
 
-   This will launch the app on `http://localhost:3000`.
+   ```bash
+   netlify dev
+   ```
+
+   This will launch the app with Netlify Functions enabled (including Firebase config fetch) on `http://localhost:8888`.
 
 ### Running Tests
 
