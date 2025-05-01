@@ -1,5 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { Category } from "../types";
+import { Category } from "../types/types";
 
 interface ModalProps {
   open: boolean;

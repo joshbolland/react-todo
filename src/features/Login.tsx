@@ -6,8 +6,8 @@ import {
   User,
   Auth
 } from "firebase/auth";
-import tick from "./assets/tick.png";
-import task from "./assets/task.webp";
+import tick from "../assets/tick.png";
+import task from "../assets/task.webp";
 
 interface LoginProps {
   setUser: (user: User | null) => void;
@@ -115,8 +115,7 @@ export default function Login({ setUser, auth }: LoginProps) {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white bg-[#3292FF] hover:bg-[#3292FF]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+            className={`w-full text-white bg-[#7f54ff] hover:bg-[#9b78ff] focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             {loading ? (
               <div className="animate-spin w-5 h-5 border-4 border-white border-t-transparent rounded-full"></div>
@@ -170,7 +169,7 @@ export default function Login({ setUser, auth }: LoginProps) {
         <div className="text-sm text-gray-500">
           <p>
             Don't have an account?{" "}
-            <a href="/signup" className="text-blue-600">
+            <a href="/signup" className="text-[#7f54ff] hover:text-[#9b78ff]">
               Sign up here
             </a>
           </p>

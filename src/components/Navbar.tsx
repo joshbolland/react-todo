@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut, Auth, User } from "firebase/auth";
-import logo from "./assets/tick.png";
+import logo from "../assets/tick.png";
 
 interface NavbarProps {
   auth: Auth | null;

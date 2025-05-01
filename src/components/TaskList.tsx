@@ -145,6 +145,13 @@ export default function TaskList({
         </button>
       </div>
       <div className="w-full">
+        {tasks.length === 0 && (
+          <div className="flex items-center justify-center h-64">
+            <p className="text-gray-600 text-sm italic text-center">
+              You have no tasks yet. Add one using the "New task" button above!
+            </p>
+          </div>
+        )}
         {Object.entries(groupedTasks).map(([category, tasks]) => (
           <div key={category} className="mb-6">
             <h2 className="text-lg text-left font-semibold text-gray-800 pb-2 border-b border-gray-300">

@@ -1,6 +1,6 @@
 import React, { useState, lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom"; // Use Navigate for redirection
-import "./App.css";
+import "./styles/App.css";
 import Login from "./features/Login";
 import SignUp from "./features/SignUp";
 import { Category, Task } from "./types/types";

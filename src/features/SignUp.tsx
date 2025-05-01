@@ -78,7 +78,7 @@ export default function SignUp({ setUser, auth }: SignUpProps) {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white bg-[#3292FF] hover:bg-[#3292FF]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${loading ? "opacity-50 cursor-not-allowed" : ""
+            className={`w-full text-white bg-[#7f54ff] hover:bg-[#9b78ff] focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
           >
             {loading ? (
@@ -92,7 +92,7 @@ export default function SignUp({ setUser, auth }: SignUpProps) {
         <div className="text-sm text-gray-500">
           <p>
             Already have an account?{" "}
-            <a href="/login" className="text-blue-600">
+            <a href="/login" className="text-[#7f54ff]">
               Login here
             </a>
           </p>
