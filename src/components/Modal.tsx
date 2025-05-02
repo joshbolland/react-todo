@@ -62,7 +62,11 @@ export function Modal({
                   <select
                     value={selectedCategory ?? ""}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="text-white bg-[#88A39D] hover:bg-[#6D8F8B] rounded-lg text-sm px-2 py-2.5 mb-4 mt-1 cursor-pointer"
+                    className="text-white bg-[#88A39D] hover:bg-[#6D8F8B] rounded-lg text-sm px-2 py-2.5 mb-4 mt-1 cursor-pointe appearance-none"
+                    style={{
+                      WebkitAppearance: "none",
+                      MozAppearance: "none",
+                    }}
                   >
                     <option value="" disabled>
                       Select a category
@@ -79,6 +83,10 @@ export function Modal({
                     value={targetDate}
                     onChange={(e) => setTargetDate(e.target.value)}
                     className="w-full bg-gray-100 rounded-lg p-2 mt-1"
+                    style={{
+                      WebkitAppearance: "none",
+                      MozAppearance: "none",
+                    }}
                   />
                 </div>
               </div>

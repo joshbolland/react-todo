@@ -1,3 +1,4 @@
+import { isMobileDevice } from "../utils/isMobileDevice";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { Modal } from "./Modal";
@@ -18,6 +19,9 @@ const PlusCircleIcon = lazy(() =>
 );
 const TrashIcon = lazy(() =>
   import("lucide-react").then((module) => ({ default: module.Trash2 }))
+);
+const PencilIcon = lazy(() =>
+  import("lucide-react").then((module) => ({ default: module.Pencil }))
 );
 
 interface TaskListProps {
@@ -47,6 +51,8 @@ export default function TaskList({
   const [confirmDeleteId, setConfirmDeleteId] = useState<string |
     null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
 
   const db = useMemo(() => {
     if (!firebaseConfig) return null;
@@ -199,16 +205,76 @@ export default function TaskList({
                       </div>
                     </div>
                     <Suspense fallback={null}>
-                      <button
-                        className="ml-4 mr-4 p-1 rounded text-red-500 hover:text-red-700 hover:bg-red-100 hidden group-hover:inline-block self-center cursor-pointer"
-                        onClick={() => {
-                          setConfirmDeleteId(task.id);
-                          setShowConfirmModal(true);
-                        }}
-                        aria-label="Delete Task"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
+                      <div className="flex self-center">
+
+                        {isMobileDevice ? (
+                          <>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedTaskId(expandedTaskId === task.id ? null : task.id);
+                              }}
+                              aria-label="Toggle options"
+                              className="ml-4 flex items-center self-center mr-2.5"
+                            >
+                              <svg
+                                className={`w-4 h-4 transition-transform ${expandedTaskId === task.id ? "rotate-180" : ""}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15 19l-7-7 7-7"
+                                />
+                              </svg>
+                            </button>
+                            {expandedTaskId === task.id && (
+                              <div className="flex gap-2 ml-2 self-center">
+                                <button
+                                  className="p-1 rounded text-blue-500 hover:text-blue-700 hover:bg-blue-100 cursor-pointer"
+                                  onClick={() => setEditingTask(task)}
+                                  aria-label="Edit Task"
+                                >
+                                  <PencilIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                  className="mr-2.5 rounded text-red-500 hover:text-red-700 hover:bg-red-100 cursor-pointer"
+                                  onClick={() => {
+                                    setConfirmDeleteId(task.id);
+                                    setShowConfirmModal(true);
+                                  }}
+                                  aria-label="Delete Task"
+                                >
+                                  <TrashIcon className="w-4 h-4" />
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                            <button
+                              className="p-1 rounded text-blue-500 hover:text-blue-700 hover:bg-blue-100 cursor-pointer"
+                              onClick={() => setEditingTask(task)}
+                              aria-label="Edit Task"
+                            >
+                              <PencilIcon className="w-4 h-4" />
+                            </button>
+                            <button
+                              className="p-1 rounded text-red-500 hover:text-red-700 hover:bg-red-100 cursor-pointer"
+                              onClick={() => {
+                                setConfirmDeleteId(task.id);
+                                setShowConfirmModal(true);
+                              }}
+                              aria-label="Delete Task"
+                            >
+                              <TrashIcon className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </Suspense>
                   </div>
                 </li>
@@ -231,6 +297,54 @@ export default function TaskList({
         targetDate={targetDate}
         setTargetDate={setTargetDate}
       />
+      {editingTask && (
+        <Modal
+          open={!!editingTask}
+          setOpen={(isOpen) => {
+            if (!isOpen) setEditingTask(null);
+          }}
+          taskDescription={editingTask.description}
+          setTaskDescription={(desc) => {
+            setEditingTask((prev) =>
+              prev ? { ...prev, description: typeof desc === 'function' ? desc(prev.description) : desc } : null
+            );
+            return desc;
+          }}
+          selectedCategory={editingTask.category}
+          setSelectedCategory={(cat) =>
+            setEditingTask((prev) =>
+              prev
+                ? { ...prev, category: typeof cat === "function" ? cat(prev?.category ?? "") ?? "" : cat ?? "" }
+                : null
+            )
+          }
+          categories={categories}
+          targetDate={editingTask.targetDate ?? ""}
+          setTargetDate={(date) =>
+            setEditingTask((prev) =>
+              prev
+                ? { ...prev, targetDate: typeof date === "function" ? date(prev.targetDate ?? "") : date }
+                : null
+            )
+          }
+          addTask={async () => {
+            if (!editingTask || !db || !user) return;
+            const taskRef = doc(db, "users", user.uid, "tasks", editingTask.id);
+            await updateDoc(taskRef, {
+              description: editingTask.description.trim(),
+              category: editingTask.category.trim(),
+              targetDate: editingTask.targetDate?.trim() || null,
+            });
+            setTasks((prev) =>
+              prev.map((t) =>
+                t.id === editingTask.id ? { ...t, ...editingTask } : t
+              )
+            );
+            setEditingTask(null);
+          }}
+          closeModal={() => setEditingTask(null)}
+        />
+      )}
       {showConfirmModal && (
         <Dialog open={showConfirmModal} onClose={setShowConfirmModal} className="relative z-10">
           <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
