@@ -182,7 +182,17 @@ export default function TaskList({
                           {task.description}
                         </span>
                         {task.targetDate && (
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p
+                            className={`text-sm mt-1 flex items-center gap-1 ${!task.completed && new Date(task.targetDate) < new Date()
+                              ? "text-red-500"
+                              : "text-gray-500"
+                              }`}
+                          >
+                            {!task.completed && new Date(task.targetDate) < new Date() && (
+                              <span className="bg-red-100 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full">
+                                Overdue
+                              </span>
+                            )}
                             {new Date(task.targetDate).toLocaleDateString()}
                           </p>
                         )}
