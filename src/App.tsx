@@ -22,6 +22,7 @@ function App() {
   const [isDesktop, setIsDesktop] = useState<boolean>(true); // Desktop check workaround for styling purposes
   const [categories, setCategories] = useState<Category[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col ">
@@ -66,6 +67,8 @@ function App() {
                       setSidebarIsOpen={setSidebarIsOpen}
                       isDesktop={isDesktop}
                       setIsDesktop={setIsDesktop}
+                      selectedCategory={selectedCategory}
+                      setSelectedCategory={setSelectedCategory}
                     />
                     <TaskList
                       categories={categories}
@@ -74,6 +77,8 @@ function App() {
                       user={user}
                       firebaseConfig={firebaseConfig}
                       isDesktop={isDesktop}
+                      selectedCategory={selectedCategory}
+                      setSelectedCategory={setSelectedCategory}
                     />
                   </div>
                 </Suspense>

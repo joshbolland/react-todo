@@ -32,6 +32,8 @@ interface CategoriesProps {
   setSidebarIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isDesktop: boolean;
   setIsDesktop: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedCategory: string | null;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export default function Categories({
@@ -44,6 +46,8 @@ export default function Categories({
   setSidebarIsOpen,
   isDesktop,
   setIsDesktop,
+  selectedCategory,
+  setSelectedCategory
 }: CategoriesProps) {
   useEffect(() => {
     const handleResize = () => {
@@ -172,6 +176,8 @@ export default function Categories({
     }));
 
     setTasks(fetchedTasks);
+
+    setSelectedCategory(category)
 
     if (sidebarIsOpen && !isDesktop) {
       setSidebarIsOpen(false);

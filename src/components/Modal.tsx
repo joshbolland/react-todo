@@ -8,8 +8,8 @@ interface ModalProps {
   setTaskDescription: React.Dispatch<React.SetStateAction<string>>;
   addTask: (targetDate: string | null) => void;
   closeModal: () => void;
-  selectedCategory: string;
-  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+  selectedCategory: string | null;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string | null>>;
   categories: Category[];
   targetDate: string;
   setTargetDate: React.Dispatch<React.SetStateAction<string>>;
@@ -60,7 +60,7 @@ export function Modal({
                   />
                   <label>Category</label>
                   <select
-                    value={selectedCategory}
+                    value={selectedCategory ?? ""}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="text-white bg-[#88A39D] hover:bg-[#6D8F8B] rounded-lg text-sm px-2 py-2.5 mb-4 mt-1 cursor-pointer"
                   >

@@ -27,6 +27,8 @@ interface TaskListProps {
   firebaseConfig: FirebaseConfig | null;
   categories: Category[];
   isDesktop: boolean;
+  selectedCategory: string | null;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export default function TaskList({
@@ -36,12 +38,14 @@ export default function TaskList({
   firebaseConfig,
   categories,
   isDesktop,
+  selectedCategory,
+  setSelectedCategory
 }: TaskListProps) {
   const [taskDescription, setTaskDescription] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [open, setOpen] = useState(false);
   const [targetDate, setTargetDate] = useState("");
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string |
+    null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const db = useMemo(() => {
@@ -80,7 +84,7 @@ export default function TaskList({
 
   const addTask = async (targetDate: string | null) => {
     const sanitizedDescription = taskDescription.trim();
-    const sanitizedCategory = selectedCategory.trim();
+    const sanitizedCategory = selectedCategory ? selectedCategory.trim() : "";
     const sanitizedDate = targetDate?.trim() || null;
 
     if (!sanitizedDescription || !sanitizedCategory || !sanitizedDate || !user || !userTasksRef) return;
@@ -148,7 +152,9 @@ export default function TaskList({
         {tasks.length === 0 && (
           <div className="flex items-center justify-center h-64">
             <p className="text-gray-600 text-sm italic text-center">
-              You have no tasks yet. Add one using the "New task" button above!
+              {selectedCategory
+                ? `You have no ${selectedCategory} tasks yet.`
+                : "You have no tasks yet."} Add one using the "New task" button above!
             </p>
           </div>
         )}
@@ -209,7 +215,7 @@ export default function TaskList({
         setTaskDescription={setTaskDescription}
         addTask={addTask}
         closeModal={closeModal}
-        selectedCategory={selectedCategory}
+        selectedCategory={selectedCategory ?? ""}
         setSelectedCategory={setSelectedCategory}
         categories={categories}
         targetDate={targetDate}
